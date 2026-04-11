@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northbrand Weather</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS for Radar -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  
+  <div class="dashboard-wrapper">
+    <header class="top-nav glass-panel">
+      <h1>Northbrand Weather</h1>
+      
+      <div class="nav-controls">
+        <div id="clock-container" class="clocks hidden">
+          <!-- Populated dynamically -->
+        </div>
+        <div id="solar-container" class="clocks hidden" style="font-size: 0.82rem; border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Auto Refresh -->
+        <div class="refresh-control" title="Auto-Refresh Interval">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.5l1.75 1.75"/></svg>
+          <select id="auto-refresh-select" class="glass-select">
+            <option value="0">Auto-Refresh: Off</option>
+            <option value="15">15 Minutes</option>
+            <option value="30">30 Minutes</option>
+            <option value="60">1 Hour</option>
+            <option value="360">6 Hours</option>
+          </select>
+        </div>
+
+        <button id="geo-button" class="glass-button" title="Use My Location" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        
+        <form id="search-form" class="search-container">
+          <input type="text" id="location-input" placeholder="Search location..." required>
+          <button type="submit" id="search-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+        </form>
+      </div>
+    </header>
+
+    <div id="alerts-container"></div>
+    <div id="risks-container" class="risks-layout"></div>
+
+    <!-- Advanced Flow Layout -->
+    <main class="advanced-grid">
+      
+      <!-- Primary Live Visuals (Radar) -->
+      <section class="section-container radar-section full-width-section">
+        <div class="radar-header">
+            <h2>Live Nexus Radar</h2>
+            <button id="map-theme-toggle" class="glass-button" type="button">Switch to Dark Map</button>
+        </div>
+        <div id="radar-map" class="map-container glass-panel"></div>
+      </section>
+
+      <!-- 12-Hour Microcast -->
+      <section class="section-container full-width-section">
+        <h2>12-Hour Microcast</h2>
+        <div id="hourly-grid" class="hourly-layout">
+           <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Full Width: 7-Day Overview -->
+      <section class="section-container full-width-section">
+        <h2>7-Day Outlook</h2>
+        <div id="loading-indicator" class="hidden loading-pulse">Aggregating advanced metrics...</div>
+        <div id="forecast-grid" class="forecast-layout">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Aviation / Airport Data -->
+      <section class="section-container full-width-section aviation-box">
+        <h2>Aviation / Airport</h2>
+        <div class="aviation-panel glass-panel">
+          <div class="aviation-item">
+            <h3>METAR <span id="metar-station"></span></h3>
+            <pre id="metar-data">Requires Search</pre>
+          </div>
+          <div class="aviation-item">
+            <h3>TAF <span id="taf-station"></span></h3>
+            <pre id="taf-data">Requires Search</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Full Width: Meteorological Discussion -->
+      <section class="section-container full-width-section discussion-section">
+        <h2>Area Forecast Discussion</h2>
+        <div class="discussion-panel glass-panel">
+          <pre id="discussion-data">Search a location to load NWS discussion payload.</pre>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
