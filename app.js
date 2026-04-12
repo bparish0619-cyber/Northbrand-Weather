@@ -591,16 +591,20 @@ document.addEventListener('DOMContentLoaded', () => {
        } catch (err) { continue; }
     }
 
+    const footerStation = document.getElementById('footer-station');
+
     if (!validStation) {
       metarStation.innerText = `(N/A)`;
       tafStation.innerText = `(N/A)`;
       metarData.innerText = "No nearby aviation hubs identified.";
       tafData.innerText = "No valid TAF structures found for surrounding grid.";
+      if (footerStation) footerStation.innerText = "No connection established";
       return;
     }
 
     metarStation.innerText = `(${validStation}) TRANSLATED`;
     tafStation.innerText = `(${validStation}) DECODED`;
+    if (footerStation) footerStation.innerText = `Sector ${validStation}`;
 
     if (metarResult) {
       metarData.innerText = translateMETAR(metarResult.properties) || "No valid METAR properties found.";
