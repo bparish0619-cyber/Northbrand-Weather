@@ -127,25 +127,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Search & Geolocation Config ---
-  if (geoButton) {
-    geoButton.addEventListener('click', () => {
-      if ("geolocation" in navigator) {
-        geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
+  function executeGeolocation(isAutoLoad = false) {
+     if ("geolocation" in navigator) {
+        if (geoButton) geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
         navigator.geolocation.getCurrentPosition(
           (pos) => {
+             localStorage.setItem('alwaysUseGPS', 'true');
              const lat = pos.coords.latitude;
              const lon = pos.coords.longitude;
              locationInput.value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-             geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
+             if (geoButton) geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
              fetchDashboardDataByCoords(lat, lon);
           },
           (err) => {
-             geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
-             alert("Geolocation failed: " + err.message);
+             if (geoButton) geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
+             if (!isAutoLoad) alert("Geolocation failed: " + err.message);
           }
         );
-      } else { alert("Geolocation not supported by your browser."); }
-    });
+      } else { 
+         if (!isAutoLoad) alert("Geolocation not supported by your browser."); 
+      }
+  }
+
+  if (geoButton) {
+    geoButton.addEventListener('click', () => executeGeolocation(false));
+  }
+
+  // Auto-Load GPS Hook
+  if (localStorage.getItem('alwaysUseGPS') === 'true') {
+     executeGeolocation(true);
   }
 
   searchForm.addEventListener('submit', async (e) => {
