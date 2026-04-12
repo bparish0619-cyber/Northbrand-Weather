@@ -554,33 +554,52 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const station = data.features[0].properties.stationIdentifier; 
-    metarStation.innerText = `(${station}) TRANSLATED`;
-    tafStation.innerText = `(${station}) DECODED`;
+    const checkStations = data.features.slice(0, 10).map(f => f.properties.stationIdentifier);
+    let validStation = null;
+    let metarResult = null;
+    let tafResult = null;
 
-    try {
-      const metarRes = await fetch(`https://api.weather.gov/stations/${station}/observations/latest`);
-      if (metarRes.ok) {
-        const metarJson = await metarRes.json();
-        metarData.innerText = translateMETAR(metarJson.properties) || "No valid METAR properties found.";
-      } else { metarData.innerText = "Error loading METAR telemetry."; }
-    } catch(err) { metarData.innerText = "Error loading METAR telemetry."; }
+    for (let station of checkStations) {
+       try {
+         const shortStation = station.length === 4 ? station.substring(1) : station;
+         const tafListRes = await fetch(`https://api.weather.gov/products/types/TAF/locations/${shortStation}`);
+         if (tafListRes.ok) {
+           const tafListJson = await tafListRes.json();
+           if (tafListJson["@graph"] && tafListJson["@graph"].length > 0) {
+              validStation = station;
+              
+              const tafId = tafListJson["@graph"][0]["@id"];
+              const tafRes = await fetch(tafId);
+              tafResult = await tafRes.json();
+              
+              const metarRes = await fetch(`https://api.weather.gov/stations/${station}/observations/latest`);
+              if (metarRes.ok) { metarResult = await metarRes.json(); }
+              
+              break; 
+           }
+         }
+       } catch (err) { continue; }
+    }
 
-    try {
-      const shortStation = station.length === 4 ? station.substring(1) : station;
-      const tafListRes = await fetch(`https://api.weather.gov/products/types/TAF/locations/${shortStation}`);
-      if (tafListRes.ok) {
-        const tafListJson = await tafListRes.json();
-        if (tafListJson["@graph"] && tafListJson["@graph"].length > 0) {
-          const tafId = tafListJson["@graph"][0]["@id"];
-          const tafRes = await fetch(tafId);
-          const tafDataJson = await tafRes.json();
-          // Clean text block
-          const cleanText = tafDataJson.productText.replace(/\r\n/g, '\n');
-          tafData.innerText = translateTAF(cleanText) || "No valid TAF string found.";
-        } else { tafData.innerText = "No connected TAF pipelines found."; }
-      } else { tafData.innerText = "Error loading TAF structures."; }
-    } catch(err) { tafData.innerText = "Error loading TAF structures."; }
+    if (!validStation) {
+      metarStation.innerText = `(N/A)`;
+      tafStation.innerText = `(N/A)`;
+      metarData.innerText = "No nearby aviation hubs identified.";
+      tafData.innerText = "No valid TAF structures found for surrounding grid.";
+      return;
+    }
+
+    metarStation.innerText = `(${validStation}) TRANSLATED`;
+    tafStation.innerText = `(${validStation}) DECODED`;
+
+    if (metarResult) {
+      metarData.innerText = translateMETAR(metarResult.properties) || "No valid METAR properties found.";
+    } else { metarData.innerText = "Error loading METAR telemetry."; }
+
+    if (tafResult) {
+       const cleanText = tafResult.productText.replace(/\r\n/g, '\n');
+       tafData.innerText = translateTAF(cleanText) || "No valid TAF string found.";
+    } else { tafData.innerText = "Error loading TAF structures."; }
   }
 
   async function fetchDiscussion(wfo) {
