@@ -170,6 +170,7 @@ body {
   flex-direction: column;
   gap: 12px;
   margin-bottom: 32px;
+  align-items: flex-start;
 }
 .risk-briefing {
   background: var(--danger-bg);
@@ -223,6 +224,30 @@ body {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1.5px;
+}
+
+/* Collapsibles */
+.section-header-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 12px;
+}
+.section-header-toggle h2 { margin-bottom: 0 !important; }
+.chevron { transition: transform 0.3s ease; color: var(--accent); }
+.collapsed .chevron { transform: rotate(-90deg); }
+.collapsible-content {
+  transition: max-height 0.3s ease-out, opacity 0.3s ease;
+  max-height: 2000px; /* large enough for content */
+  opacity: 1;
+  overflow: hidden;
+}
+.collapsed .collapsible-content {
+  max-height: 0;
+  opacity: 0;
 }
 
 /* Radar Context */

@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const clockContainer = document.getElementById('clock-container');
   const solarContainer = document.getElementById('solar-container');
   
+  // Initialize Collapsibles
+  document.querySelectorAll('.section-header-toggle').forEach(header => {
+    header.addEventListener('click', () => {
+      header.parentElement.classList.toggle('collapsed');
+    });
+  });
+
   // Global State
   let map, radarLayer, locationMarker;
   let isDarkMode = false;
@@ -42,6 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
         transparent: true,
         opacity: 0.7
     }).addTo(map);
+
+    const opacitySlider = document.getElementById('radar-opacity-slider');
+    if (opacitySlider) {
+      opacitySlider.addEventListener('input', (e) => {
+        if (radarLayer) radarLayer.setOpacity(parseFloat(e.target.value));
+      });
+    }
 
     const themeBtn = document.getElementById('map-theme-toggle');
     if (themeBtn) {
@@ -87,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const localStr = now.toLocaleTimeString('en-US', { timeZone: timeZone, hour12: false, hour: '2-digit', minute:'2-digit' });
         const zuluStr = now.toLocaleTimeString('en-US', { timeZone: 'UTC', hour12: false, hour: '2-digit', minute:'2-digit' }) + 'Z';
-        clockContainer.innerHTML = `<span class="clock-label">LCL:</span> ${localStr} &nbsp; <span class="clock-label">Z:</span> ${zuluStr}`;
+        clockContainer.innerHTML = `<span class="clock-label">Local:</span> ${localStr} &nbsp; <span class="clock-label">Z:</span> ${zuluStr}`;
       } catch (e) {
         clockContainer.innerHTML = 'Clock Error';
       }
@@ -103,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0`);
       const data = await res.json();
       if (data.status === "OK") {
-        // Output as strictly 24hr military time to align with requirements
+        // Output as strictly 24hr military time
         const sunrise = new Date(data.results.sunrise).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute:'2-digit'});
         const sunset = new Date(data.results.sunset).toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute:'2-digit'});
         solarContainer.innerHTML = `☀ Rise: ${sunrise} | Set: ${sunset}`;
@@ -116,17 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (geoButton) {
     geoButton.addEventListener('click', () => {
       if ("geolocation" in navigator) {
-        geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`;
+        geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
         navigator.geolocation.getCurrentPosition(
           (pos) => {
              const lat = pos.coords.latitude;
              const lon = pos.coords.longitude;
              locationInput.value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-             geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="spin" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`;
+             geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
              fetchDashboardDataByCoords(lat, lon);
           },
           (err) => {
-             geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`;
+             geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
              alert("Geolocation failed: " + err.message);
           }
         );
@@ -154,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchDashboardDataByCoords(lat, lon, isRefresh = false) {
     currentLat = lat;
     currentLon = lon;
-    if (geoButton) geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`;
+    if (geoButton) geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
 
     if (refreshSelect) setupAutoRefresh(parseInt(refreshSelect.value));
     
@@ -224,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Translators & Utilities ---
   function getWeatherSVG(shortForecast, isDay) {
+    if (!shortForecast) return '';
     const text = shortForecast.toLowerCase();
     let svg = '';
     if (text.includes('thunder') || text.includes('t-storm') || text.includes('lightning')) {
@@ -249,11 +264,28 @@ document.addEventListener('DOMContentLoaded', () => {
      return valuesArr.filter(v => typeof v.validTime === 'string' && v.validTime.startsWith(matchDateStr)).map(v => v.value).filter(v => v !== null);
   }
 
+  function getExactHourGridVal(valuesArr, exactTimeStr) {
+     if (!valuesArr) return null;
+     const targetTime = new Date(exactTimeStr).getTime();
+     for (let v of valuesArr) {
+        const parts = v.validTime.split('/'); // ["2026-04-11T16:00:00+00:00", "PT1H"]
+        const start = new Date(parts[0]).getTime();
+        let durationHours = 1;
+        if (parts[1] && parts[1].includes('H')) {
+           durationHours = parseInt(parts[1].replace('PT', '').replace('H', ''));
+        }
+        const end = start + (durationHours * 60 * 60 * 1000);
+        
+        if (targetTime >= start && targetTime < end) { return v.value; }
+     }
+     return null;
+  }
+
   function getGridRateForHour(valuesArr, hourlyStartTimeStr) {
      if (!valuesArr) return 0;
      const targetTime = new Date(hourlyStartTimeStr).getTime();
      for (let v of valuesArr) {
-        const parts = v.validTime.split('/'); // e.g. ["2026-04-11T16:00:00+00:00", "PT6H"]
+        const parts = v.validTime.split('/');
         const start = new Date(parts[0]).getTime();
         let durationHours = 1;
         if (parts[1] && parts[1].includes('H')) {
@@ -280,15 +312,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const timeStr = formatMilitaryTime(p.startTime);
       const icon = getWeatherSVG(p.shortForecast, p.isDaytime);
       
-      // Compute advanced metrics directly mapped from NWS hourly array limits or via gridProps correlation
-      const feelTempC = p.apparentTemperature?.value;
+      const feelTempC = getExactHourGridVal(gridProps?.apparentTemperature?.values, p.startTime) ?? p.apparentTemperature?.value;
       const feelTempF = typeof feelTempC === 'number' ? Math.round((feelTempC * 9/5) + 32) : 'N/A';
-      const humidity = p.relativeHumidity?.value || 'N/A';
+      
+      const gridRh = getExactHourGridVal(gridProps?.relativeHumidity?.values, p.startTime) ?? p.relativeHumidity?.value;
+      const humidity = typeof gridRh === 'number' ? Math.round(gridRh) : 'N/A';
+      
       const precipProb = p.probabilityOfPrecipitation?.value || 0;
       
-      // Extrapolate hourly rate precisely from the quantitative grid boundaries
       const rateInches = getGridRateForHour(gridProps?.quantitativePrecipitation?.values, p.startTime);
-      const rateStr = rateInches > 0 ? rateInches.toFixed(3) : '0';
+      const rateStr = rateInches > 0 ? rateInches.toFixed(2) : '0';
 
       html += `
         <div class="hourly-card glass-panel" style="min-width: 140px; align-items: stretch;">
@@ -299,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="forecast-metric"><span class="label">Wind</span> <span> ${p.windSpeed || '0'}</span></div>
           <div class="forecast-metric"><span class="label">Feels Like</span> <span>${feelTempF}&deg;</span></div>
           <div class="forecast-metric"><span class="label">Humidity</span> <span>${humidity}%</span></div>
-          <div class="forecast-metric"><span class="label">Precip Prob</span> <span>${precipProb}%</span></div>
+          <div class="forecast-metric"><span class="label">Precip</span> <span>${precipProb}%</span></div>
           <div class="forecast-metric" style="color:#fcd34d;"><span class="label">Rate</span> <span>${rateStr}"/hr</span></div>
         </div>
       `;
@@ -313,36 +346,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await res.json();
     const periods = data.properties.periods;
 
-    const displayPeriods = periods.slice(0, 14); // 7-Days
     let html = '';
     let hasExtremeHeat = false, hasExtremeCold = false, hasSnowRisk = false, hasLightningRisk = false;
 
-    for (let i = 0; i < displayPeriods.length; i += 2) {
-      const day = displayPeriods[i];
-      const night = displayPeriods[i+1] || day; 
+    // Grouping strictly by Date completely guarantees Day/Night structural order
+    const groupedByDate = {};
+    for (let p of periods) {
+       const dateStr = p.startTime.split('T')[0];
+       if (!groupedByDate[dateStr]) groupedByDate[dateStr] = { day: null, night: null };
+       if (p.isDaytime) groupedByDate[dateStr].day = p;
+       else groupedByDate[dateStr].night = p;
+    }
+
+    const validDates = Object.keys(groupedByDate).slice(0, 7);
+    
+    function minifyDesc(sc) {
+       if (!sc) return '--';
+       let s = sc.split(' then ')[0].split(' likely')[0];
+       if (s.length > 25) s = s.split(' and ')[0];
+       return s.trim();
+    }
+
+    for (const targetDate of validDates) {
+      const g = groupedByDate[targetDate];
+      const dayP = g.day;
+      const nightP = g.night;
+      const primary = dayP || nightP;
+      if (!primary) continue;
       
-      const t1 = day.temperature;
-      const t2 = night.temperature;
-      const highTemp = Math.max(t1, t2);
-      const lowTemp = Math.min(t1, t2);
+      let highTemp = '-';
+      let lowTemp = '-';
+      if (dayP && nightP) {
+         highTemp = Math.max(dayP.temperature, nightP.temperature);
+         lowTemp = Math.min(dayP.temperature, nightP.temperature);
+      } else if (dayP) { highTemp = lowTemp = dayP.temperature; }
+      else if (nightP) { highTemp = lowTemp = nightP.temperature; }
       
       if (highTemp >= 100 || lowTemp >= 100) hasExtremeHeat = true;
       if (highTemp <= 32 || lowTemp <= 32) hasExtremeCold = true;
-      if (day.shortForecast.toLowerCase().includes('snow') || night.shortForecast.toLowerCase().includes('snow')) hasSnowRisk = true;
-      if (day.shortForecast.toLowerCase().includes('thunder') || night.shortForecast.toLowerCase().includes('thunder')) hasLightningRisk = true;
+      if (primary.shortForecast.toLowerCase().includes('snow')) hasSnowRisk = true;
+      if (primary.shortForecast.toLowerCase().includes('thunder')) hasLightningRisk = true;
 
-      const rainProb = day.probabilityOfPrecipitation?.value || night.probabilityOfPrecipitation?.value || 0;
-      const windSpeed = day.windSpeed;
+      const rainProb = dayP?.probabilityOfPrecipitation?.value || nightP?.probabilityOfPrecipitation?.value || 0;
+      const windSpeed = primary.windSpeed;
       
-      // Parse Grid Arrays per Period Date
-      const targetDate = day.startTime.split('T')[0];
-      
-      // Relative Humidity
       const rhVals = getGridVals(gridProps?.relativeHumidity?.values, targetDate);
       let rhStr = "N/A";
       if (rhVals.length > 0) rhStr = Math.round(rhVals.reduce((a,b)=>a+b,0)/rhVals.length) + "%";
 
-      // Apparent Temp
       const atVals = getGridVals(gridProps?.apparentTemperature?.values, targetDate);
       let feelStr = "N/A";
       if (atVals.length > 0) {
@@ -350,22 +401,32 @@ document.addEventListener('DOMContentLoaded', () => {
          feelStr = Math.round((avgC * 9/5) + 32) + "&deg;F";
       }
 
-      // 24 HR Precipitation sum exactly required in 7 day forecast by user
       const precVals = getGridVals(gridProps?.quantitativePrecipitation?.values, targetDate);
       let precipAccumulationStr = '0.00"';
       if (precVals.length > 0) precipAccumulationStr = (precVals.reduce((a,b)=>a+b,0) * 0.0393701).toFixed(2) + `"`;
 
-      const simpleIcon = getWeatherSVG(day.shortForecast, day.isDaytime);
+      const simpleIcon = getWeatherSVG(primary.shortForecast, primary.isDaytime);
+      
+      // Clean header (ignoring exact day.name which shifts unreliably)
+      let cleanHeaderName = new Date(targetDate + "T12:00:00").toLocaleDateString('en-US', {weekday: 'long'});
+      if (primary.name.toLowerCase() === 'today' || primary.name.toLowerCase() === 'tonight' || primary.name.toLowerCase() === 'this afternoon') {
+          cleanHeaderName = 'Today';
+      }
+
       html += `
         <div class="forecast-card glass-panel" style="align-items: stretch;">
-          <div class="forecast-name" style="text-align:center;">${day.name}</div>
+          <div class="forecast-name" style="text-align:center;">${cleanHeaderName}</div>
           <div style="text-align:center;">${simpleIcon}</div>
           <div class="forecast-temp" style="justify-content:center;"><span class="high">H: ${highTemp}&deg;</span> <span class="low">L: ${lowTemp}&deg;</span></div>
-          <div class="forecast-short" style="text-align:center;">${day.shortForecast.substring(0,40)}</div>
+          
+          <div class="forecast-metric" style="flex-direction:column; align-items:flex-start; gap:6px; padding-top:8px;">
+            <div style="font-size:0.85rem;"><span style="color:var(--accent); font-weight:700;">Day:</span> <span style="color:var(--text-muted);">${minifyDesc(dayP?.shortForecast)}</span></div>
+            <div style="font-size:0.85rem;"><span style="color:var(--text-muted); font-weight:700;">Night:</span> <span style="color:var(--text-muted);">${minifyDesc(nightP?.shortForecast)}</span></div>
+          </div>
           
           <!-- Detailed Block -->
           <div class="forecast-metric"><span class="label">Wind</span> <span> ${windSpeed}</span></div>
-          <div class="forecast-metric"><span class="label">Precip Prob</span> <span>${rainProb}%</span></div>
+          <div class="forecast-metric"><span class="label">Precip</span> <span>${rainProb}%</span></div>
           <div class="forecast-metric" style="color:#fcd34d;"><span class="label">24 HR Precip</span> <span>${precipAccumulationStr}</span></div>
           <div class="forecast-metric"><span class="label">Humidity</span> <span>${rhStr}</span></div>
           <div class="forecast-metric"><span class="label">Feels Like</span> <span>${feelStr}</span></div>
@@ -376,10 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Compile Expansion Risk Blocks
     let allRisks = [...alertsRisks];
-    if (hasExtremeHeat) allRisks.push({title:'Extreme Heat Activated', desc:'Dangerous heat thresholds breached natively in the simulation bounds. Temperatures are forecast to exceed 100°F. Hydrate rigorously and limit direct outdoor exposure parameters.'});
-    if (hasExtremeCold) allRisks.push({title:'Extreme Cold Activated', desc:'Temperatures are currently forecast to drop below freezing (32°F bounds). Ensure vulnerable pipe networks are insulated and sensitive systems are brought inside safely.'});
-    if (hasSnowRisk) allRisks.push({title:'Snow Geometry Event', desc:'Accumulation conditions are indicated within the long-term forecast grids natively. Monitor localized road friction models and optical visibility limitations.'});
-    if (hasLightningRisk) allRisks.push({title:'Lightning / Thunder', desc:'Elevated atmospheric capacitance risk mapped over the upcoming matrices. Consistently monitor localized thunder formations and rapidly engage interior shelter structures.'});
+    if (hasExtremeHeat) allRisks.push({title:'Heat Danger', desc:'Temperatures over 100°F expected. Drink plenty of water and stay cool.'});
+    if (hasExtremeCold) allRisks.push({title:'Freeze Warning', desc:'Temperatures dropping below 32°F. Protect plants and bring pets inside.'});
+    if (hasSnowRisk) allRisks.push({title:'Snow Expected', desc:'Snow is in the forecast. Watch out for slick roads.'});
+    if (hasLightningRisk) allRisks.push({title:'Thunderstorm Risk', desc:'Thunderstorms expected. Head indoors if you hear thunder.'});
 
     if (allRisks.length > 0) {
       risksContainer.innerHTML = allRisks.map(r => `
@@ -414,13 +475,13 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (props.parameters) {
         if (props.parameters.maxHailSize && props.parameters.maxHailSize[0]) {
-           risks.push({title: 'Severe Hail Threshold', desc:`A severe hail threat mechanism is currently active geometry bounds. Modes dictate hail stones could reach up to ${props.parameters.maxHailSize[0]} in diameter. Seek heavy structural cover.`});
+           risks.push({title: 'Severe Hail', desc:`Watch out for large hail up to ${props.parameters.maxHailSize[0]} in diameter. Seek cover.`});
         }
         if (props.parameters.maxWindGust && props.parameters.maxWindGust[0]) {
-           risks.push({title: 'Extreme Wind Gusts', desc: `Heavy air displacement limits tracking up to ${props.parameters.maxWindGust[0]} are flagged. Secure loose orbital objects and halt high profile vehicle transits.`});
+           risks.push({title: 'Extreme Wind', desc: `Damaging winds up to ${props.parameters.maxWindGust[0]} expected. Bring loose items inside.`});
         }
         if (props.parameters.tornadoDetection && props.parameters.tornadoDetection[0]) {
-           risks.push({title: 'Tornado Warning Detection', desc:`A Tornado risk parameter is currently firing dynamically: ${props.parameters.tornadoDetection[0]}. Take absolute immediate structural precautions and monitor localized siren relays.`});
+           risks.push({title: 'Tornado Warning', desc:`A tornado has been detected. Take cover immediately!`});
         }
       }
     });
@@ -434,19 +495,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // Translates TAF shorthand
   function translateTAF(text) {
      if (!text) return text;
-     return text
-        .replace(/BKN/g, 'Broken Clouds at ')
-        .replace(/OVC/g, 'Overcast Clouds at ')
-        .replace(/SCT/g, 'Scattered Clouds at ')
-        .replace(/FEW/g, 'Few Clouds at ')
-        .replace(/KT/g, ' knots ')
-        .replace(/SM/g, ' statute miles ')
-        .replace(/TSRA/g, 'Thunderstorm Rain')
-        .replace(/SHRA/g, 'Rain Showers')
-        .replace(/BR/g, 'Mist')
-        .replace(/FM/g, '\n  ▶ From ')
-        .replace(/TEMPO/g, '\n  ▶ Temporary Condition: ')
-        .replace(/PROB30/g, '\n  ▶ 30% Probability ');
+     let lines = text.split('\n');
+     return lines.map(line => {
+       let parsed = line.trim();
+       if (!parsed) return '';
+       parsed = parsed
+          .replace(/BKN/g, 'Broken Clouds at ')
+          .replace(/OVC/g, 'Overcast Clouds at ')
+          .replace(/SCT/g, 'Scattered Clouds at ')
+          .replace(/FEW/g, 'Few Clouds at ')
+          .replace(/KT/g, ' knots ')
+          .replace(/SM/g, ' statute miles ')
+          .replace(/TSRA/g, 'Thunderstorm Rain ')
+          .replace(/SHRA/g, 'Rain Showers ')
+          .replace(/VCTS/g, 'Thunderstorms in vicinity ')
+          .replace(/BR/g, 'Mist ')
+          .replace(/FM/g, '▶ From ')
+          .replace(/TEMPO/g, '▶ Temporary Condition: ')
+          .replace(/PROB30/g, '▶ 30% Probability ');
+       return parsed;
+     }).filter(l => l.length > 0).join('\n\n');
   }
 
   // Translates NWS JSON observation payload to English
@@ -494,7 +562,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const metarRes = await fetch(`https://api.weather.gov/stations/${station}/observations/latest`);
       if (metarRes.ok) {
         const metarJson = await metarRes.json();
-        // Insert Translated output instead of rawMessage
         metarData.innerText = translateMETAR(metarJson.properties) || "No valid METAR properties found.";
       } else { metarData.innerText = "Error loading METAR telemetry."; }
     } catch(err) { metarData.innerText = "Error loading METAR telemetry."; }
@@ -508,8 +575,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const tafId = tafListJson["@graph"][0]["@id"];
           const tafRes = await fetch(tafId);
           const tafDataJson = await tafRes.json();
-          const cleanText = tafDataJson.productText.replace(/\n\s*\n/g, '\n\n');
-          // Translate and format properly
+          // Clean text block
+          const cleanText = tafDataJson.productText.replace(/\r\n/g, '\n');
           tafData.innerText = translateTAF(cleanText) || "No valid TAF string found.";
         } else { tafData.innerText = "No connected TAF pipelines found."; }
       } else { tafData.innerText = "Error loading TAF structures."; }

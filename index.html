@@ -40,9 +40,9 @@
             <option value="360">6 Hours</option>
           </select>
         </div>
-
-        <button id="geo-button" class="glass-button" title="Use My Location" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+        <!-- Geo Location -->
+        <button id="geo-button" class="glass-button" type="button" title="Use Current Location">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>
         </button>
         
         <form id="search-form" class="search-container">
@@ -64,48 +64,80 @@
       <section class="section-container radar-section full-width-section">
         <div class="radar-header">
             <h2>Live Nexus Radar</h2>
-            <button id="map-theme-toggle" class="glass-button" type="button">Switch to Dark Map</button>
+            <div style="display:flex; align-items:center; gap: 12px;">
+              <label for="radar-opacity-slider" style="font-size:0.8rem; color:var(--text-muted); font-weight: 600;">Opacity</label>
+              <input type="range" id="radar-opacity-slider" min="0" max="1" step="0.1" value="0.7">
+              <button id="map-theme-toggle" class="glass-button" type="button">Switch to Dark Map</button>
+            </div>
         </div>
         <div id="radar-map" class="map-container glass-panel"></div>
       </section>
 
       <!-- 12-Hour Microcast -->
-      <section class="section-container full-width-section">
-        <h2>12-Hour Microcast</h2>
-        <div id="hourly-grid" class="hourly-layout">
-           <!-- Populated by JS -->
+      <section class="section-container full-width-section collapsible-section">
+        <div class="section-header-toggle">
+            <h2>12-Hour Microcast</h2>
+            <span class="chevron">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+        </div>
+        <div class="collapsible-content">
+            <div id="hourly-grid" class="hourly-layout">
+               <!-- Populated by JS -->
+            </div>
         </div>
       </section>
 
       <!-- Full Width: 7-Day Overview -->
-      <section class="section-container full-width-section">
-        <h2>7-Day Outlook</h2>
-        <div id="loading-indicator" class="hidden loading-pulse">Aggregating advanced metrics...</div>
-        <div id="forecast-grid" class="forecast-layout">
-          <!-- Populated by JS -->
+      <section class="section-container full-width-section collapsible-section">
+        <div class="section-header-toggle">
+            <h2>7-Day Outlook</h2>
+            <span class="chevron">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+        </div>
+        <div class="collapsible-content">
+            <div id="loading-indicator" class="hidden loading-pulse">Aggregating advanced metrics...</div>
+            <div id="forecast-grid" class="forecast-layout">
+              <!-- Populated by JS -->
+            </div>
         </div>
       </section>
 
       <!-- Aviation / Airport Data -->
-      <section class="section-container full-width-section aviation-box">
-        <h2>Aviation / Airport</h2>
-        <div class="aviation-panel glass-panel">
-          <div class="aviation-item">
-            <h3>METAR <span id="metar-station"></span></h3>
-            <pre id="metar-data">Requires Search</pre>
-          </div>
-          <div class="aviation-item">
-            <h3>TAF <span id="taf-station"></span></h3>
-            <pre id="taf-data">Requires Search</pre>
-          </div>
+      <section class="section-container full-width-section aviation-box collapsible-section">
+        <div class="section-header-toggle">
+            <h2>Aviation / Airport</h2>
+            <span class="chevron">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+        </div>
+        <div class="collapsible-content">
+            <div class="aviation-panel glass-panel">
+              <div class="aviation-item">
+                <h3>METAR <span id="metar-station"></span></h3>
+                <pre id="metar-data">Requires Search</pre>
+              </div>
+              <div class="aviation-item">
+                <h3>TAF <span id="taf-station"></span></h3>
+                <pre id="taf-data">Requires Search</pre>
+              </div>
+            </div>
         </div>
       </section>
 
       <!-- Full Width: Meteorological Discussion -->
-      <section class="section-container full-width-section discussion-section">
-        <h2>Area Forecast Discussion</h2>
-        <div class="discussion-panel glass-panel">
-          <pre id="discussion-data">Search a location to load NWS discussion payload.</pre>
+      <section class="section-container full-width-section discussion-section collapsible-section">
+        <div class="section-header-toggle">
+            <h2>Area Forecast Discussion</h2>
+            <span class="chevron">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+        </div>
+        <div class="collapsible-content">
+            <div class="discussion-panel glass-panel">
+              <pre id="discussion-data">Search a location to load NWS discussion payload.</pre>
+            </div>
         </div>
       </section>
 
