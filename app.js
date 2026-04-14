@@ -36,7 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let clockTimerId = null;
 
   function initMap() {
-    map = L.map('radar-map').setView([39.828, -98.579], 4); 
+    const initialUrlParams = new URLSearchParams(window.location.search);
+    const initialZoom = parseInt(initialUrlParams.get('zoom')) || 4;
+    map = L.map('radar-map').setView([39.828, -98.579], initialZoom); 
+    
+    map.on('zoomend', () => {
+       if (currentLat !== null) updateURLParams();
+    });
+
     baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       subdomains: 'abcd',
@@ -83,6 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
       url.searchParams.set('lat', currentLat.toFixed(4));
       url.searchParams.set('lon', currentLon.toFixed(4));
       url.searchParams.delete('q');
+    }
+    if (map) {
+      url.searchParams.set('zoom', map.getZoom());
     }
     if (refreshSelect && refreshSelect.value !== "0") {
       url.searchParams.set('refresh', refreshSelect.value);
@@ -241,7 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      map.setView([lat, lon], 8);
+      const liveUrlParams = new URLSearchParams(window.location.search);
+      const zoomToUse = parseInt(liveUrlParams.get('zoom')) || 8;
+      map.setView([lat, lon], zoomToUse);
       if (locationMarker) map.removeLayer(locationMarker);
       locationMarker = L.marker([lat, lon]).addTo(map);
       
