@@ -391,3 +391,42 @@ body {
   .search-container { flex-direction: row; }
   .forecast-layout { grid-template-columns: 1fr 1fr; }
 }
+
+/* Large Displays & 4K TVs */
+@media (min-width: 2560px) {
+  html { font-size: 20px; }
+  .dashboard-wrapper { max-width: 2400px; padding: 48px; }
+  .map-container { height: 750px; }
+  .top-nav h1 { font-size: 2.2rem; }
+  .glass-button, .glass-select, #location-input { font-size: 1.1rem; padding: 14px 24px; }
+  #location-input { width: 340px; }
+  .hourly-card { min-width: 160px; padding: 24px 16px; }
+  .forecast-layout { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .forecast-card { padding: 32px 24px; }
+  .forecast-temp { font-size: 1.4rem; }
+  .simple-icon-svg { width: 64px; height: 64px; }
+  .alert-banner { padding: 24px; }
+}
+
+@media (min-width: 3800px) {
+  html { font-size: 28px; }
+  .dashboard-wrapper { max-width: 3600px; padding: 64px; }
+  .map-container { height: 1100px; }
+  .top-nav h1 { font-size: 2.8rem; }
+  .glass-button, .glass-select { font-size: 1.4rem; padding: 18px 32px; }
+  #location-input { font-size: 1.4rem; width: 440px; }
+  .hourly-card { min-width: 220px; padding: 32px 24px; }
+  .forecast-layout { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+  .forecast-card { padding: 48px 36px; }
+  .forecast-name { font-size: 1.4rem; }
+  .forecast-temp { font-size: 2rem; }
+  .simple-icon-svg { width: 100px; height: 100px; }
+  .alert-banner { padding: 36px; border-width: 2px; }
+  .risk-briefing { padding: 36px; border-left-width: 8px; border-radius: 16px; }
+}
+
+/* Kiosk / Digital Signage Mode */
+body.kiosk-mode .top-nav,
+body.kiosk-mode footer { display: none !important; }
+body.kiosk-mode .dashboard-wrapper { max-width: 100vw; padding: 24px; }
+body.kiosk-mode .section-container h2 { font-size: 1.4rem; color: var(--accent); }

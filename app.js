@@ -76,9 +76,33 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${String(date.getHours()).padStart(2, '0')}${String(date.getMinutes()).padStart(2, '0')}`;
   }
 
+  // --- URL State Management ---
+  function updateURLParams() {
+    const url = new URL(window.location);
+    if (currentLat !== null && currentLon !== null) {
+      url.searchParams.set('lat', currentLat.toFixed(4));
+      url.searchParams.set('lon', currentLon.toFixed(4));
+      url.searchParams.delete('q');
+    }
+    if (refreshSelect && refreshSelect.value !== "0") {
+      url.searchParams.set('refresh', refreshSelect.value);
+    } else {
+      url.searchParams.delete('refresh');
+    }
+    if (document.body.classList.contains('kiosk-mode')) {
+      url.searchParams.set('kiosk', 'true');
+    } else {
+      url.searchParams.delete('kiosk');
+    }
+    window.history.replaceState({}, '', url);
+  }
+
   // --- Auto Refresh Logic ---
   if (refreshSelect) {
-    refreshSelect.addEventListener('change', (e) => { setupAutoRefresh(parseInt(e.target.value)); });
+    refreshSelect.addEventListener('change', (e) => { 
+      setupAutoRefresh(parseInt(e.target.value)); 
+      updateURLParams();
+    });
   }
 
   function setupAutoRefresh(minutes) {
@@ -153,8 +177,37 @@ document.addEventListener('DOMContentLoaded', () => {
     geoButton.addEventListener('click', () => executeGeolocation(false));
   }
 
-  // Auto-Load GPS Hook
-  if (localStorage.getItem('alwaysUseGPS') === 'true') {
+  // Auto-Load & URL Param Parsing Hook
+  const urlParams = new URLSearchParams(window.location.search);
+  const pKiosk = urlParams.get('kiosk');
+  const pRefresh = urlParams.get('refresh');
+  const pLat = urlParams.get('lat');
+  const pLon = urlParams.get('lon');
+  const pQ = urlParams.get('q');
+
+  if (pKiosk === 'true') {
+     document.body.classList.add('kiosk-mode');
+  }
+
+  if (pRefresh && refreshSelect) {
+     let optExists = Array.from(refreshSelect.options).some(o => o.value === pRefresh);
+     if (!optExists) {
+        refreshSelect.add(new Option(`${pRefresh} Minutes`, pRefresh));
+     }
+     refreshSelect.value = pRefresh;
+  }
+
+  if (pLat && pLon) {
+     const lat = parseFloat(pLat);
+     const lon = parseFloat(pLon);
+     if (!isNaN(lat) && !isNaN(lon)) {
+        locationInput.value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        fetchDashboardDataByCoords(lat, lon);
+     }
+  } else if (pQ) {
+     locationInput.value = pQ;
+     searchForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  } else if (localStorage.getItem('alwaysUseGPS') === 'true') {
      executeGeolocation(true);
   }
 
@@ -229,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ];
 
       await Promise.all(fetches);
+      updateURLParams();
     } catch (err) {
       if (!isRefresh) handleError(err);
     } finally {
