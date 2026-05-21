@@ -517,8 +517,23 @@ body.kiosk-mode .radar-section {
   margin-bottom: 0 !important;
 }
 body.kiosk-mode .radar-section .radar-header {
+  height: 32px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  padding-bottom: 4px !important;
   margin-bottom: 8px !important;
   flex-shrink: 0 !important;
+}
+body.kiosk-mode #map-theme-toggle {
+  padding: 4px 10px !important;
+  font-size: 0.75rem !important;
+  border-radius: 6px !important;
+}
+body.kiosk-mode #radar-opacity-slider {
+  height: 4px !important;
 }
 body.kiosk-mode .radar-section .map-container {
   flex: 1 !important;
@@ -571,8 +586,14 @@ body.kiosk-mode .section-container h2 {
   margin-bottom: 0 !important;
 }
 body.kiosk-mode .section-header-toggle {
+  height: 32px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid var(--glass-border) !important;
   padding-bottom: 4px !important;
-  margin-bottom: 4px !important;
+  margin-bottom: 8px !important;
   cursor: default !important; /* Non-interactive dashboard */
 }
 body.kiosk-mode .section-header-toggle .chevron {
