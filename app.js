@@ -253,7 +253,10 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const liveUrlParams = new URLSearchParams(window.location.search);
       const zoomToUse = parseInt(liveUrlParams.get('zoom')) || 8;
-      map.setView([lat, lon], zoomToUse);
+      if (map) {
+        map.invalidateSize();
+        map.setView([lat, lon], zoomToUse);
+      }
       if (locationMarker) map.removeLayer(locationMarker);
       locationMarker = L.marker([lat, lon]).addTo(map);
       
@@ -711,4 +714,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (clockContainer) clockContainer.classList.add('hidden');
     if (solarContainer) solarContainer.classList.add('hidden');
   }
+
+  // Safety refresh of map layout size on initial load
+  setTimeout(() => {
+     if (map) {
+        map.invalidateSize();
+        if (currentLat !== null && currentLon !== null) {
+           const liveUrlParams = new URLSearchParams(window.location.search);
+           const zoomToUse = parseInt(liveUrlParams.get('zoom')) || 8;
+           map.setView([currentLat, currentLon], zoomToUse);
+        }
+     }
+  }, 600);
 });

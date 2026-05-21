@@ -469,7 +469,7 @@ body.kiosk-mode .risk-briefing {
 
 body.kiosk-mode .advanced-grid {
   display: grid !important;
-  grid-template-columns: 1.25fr 1fr 1fr !important;
+  grid-template-columns: 1.3fr 0.7fr 1.6fr !important;
   grid-template-rows: auto 1fr !important;
   flex: 1 !important;
   min-height: 0 !important;
