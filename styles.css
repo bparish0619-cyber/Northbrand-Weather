@@ -434,9 +434,38 @@ body.kiosk-mode {
   padding: 0 !important;
 }
 
-body.kiosk-mode .top-nav,
 body.kiosk-mode footer {
   display: none !important;
+}
+
+body.kiosk-mode .top-nav {
+  display: flex !important;
+  margin-bottom: 4px !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+}
+body.kiosk-mode .top-nav h1 {
+  font-size: 1.25rem !important;
+}
+body.kiosk-mode .nav-controls {
+  gap: 8px !important;
+}
+body.kiosk-mode .clocks {
+  padding: 4px 10px !important;
+  font-size: 0.8rem !important;
+  border-radius: 6px !important;
+}
+body.kiosk-mode .refresh-control {
+  padding: 2px 8px !important;
+  border-radius: 6px !important;
+}
+body.kiosk-mode #location-input {
+  width: 180px !important;
+  padding: 6px 12px !important;
+  font-size: 0.85rem !important;
+}
+body.kiosk-mode #search-button {
+  padding: 0 12px !important;
 }
 
 body.kiosk-mode .dashboard-wrapper {
@@ -469,7 +498,7 @@ body.kiosk-mode .risk-briefing {
 
 body.kiosk-mode .advanced-grid {
   display: grid !important;
-  grid-template-columns: 1.3fr 0.7fr 1.6fr !important;
+  grid-template-columns: 1.2fr 0.5fr 1.6fr !important;
   grid-template-rows: auto 1fr !important;
   flex: 1 !important;
   min-height: 0 !important;
@@ -546,30 +575,33 @@ body.kiosk-mode .section-header-toggle .chevron {
   display: none !important; /* No need for collapse arrow in TV dashboard */
 }
 
-/* Middle Column: Microcast Card Compression */
+/* Middle Column: Microcast 4x3 Grid Integration (Multiple Rows) */
 body.kiosk-mode .hourly-layout {
-  padding-bottom: 4px !important;
-  gap: 8px !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 6px !important;
+  padding-bottom: 0 !important;
+  overflow: hidden !important;
 }
 body.kiosk-mode .hourly-card {
-  min-width: 80px !important;
-  padding: 8px 6px !important;
-  border-radius: 8px !important;
-  gap: 2px !important;
+  min-width: 0 !important;
+  padding: 6px 4px !important;
+  border-radius: 6px !important;
+  gap: 1px !important;
 }
 body.kiosk-mode .hourly-card .hourly-time {
-  font-size: 0.8rem !important;
-  margin-bottom: 2px !important;
+  font-size: 0.75rem !important;
+  margin-bottom: 0px !important;
 }
 body.kiosk-mode .hourly-card .simple-icon-svg {
-  width: 24px !important;
-  height: 24px !important;
-  margin-bottom: 2px !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin-bottom: 0px !important;
 }
 body.kiosk-mode .hourly-card .hourly-temp {
-  font-size: 1rem !important;
+  font-size: 0.9rem !important;
   font-weight: 700 !important;
-  margin-bottom: 2px !important;
+  margin-bottom: 0px !important;
 }
 body.kiosk-mode .hourly-card .forecast-metric {
   display: none !important;
@@ -582,7 +614,7 @@ body.kiosk-mode .hourly-card .forecast-metric:nth-of-type(4) {
   padding: 0 !important;
   margin: 0 !important;
   width: auto !important;
-  font-size: 0.75rem !important;
+  font-size: 0.7rem !important;
   color: var(--accent) !important;
 }
 body.kiosk-mode .hourly-card .forecast-metric:nth-of-type(4) span.label {
@@ -646,10 +678,10 @@ body.kiosk-mode .forecast-card .forecast-metric:nth-of-type(3) span.label {
   display: none !important;
 }
 
-/* Right Column: Aviation METAR & TAF side-by-side */
+/* Right Column: Aviation METAR & TAF side-by-side with extra TAF space */
 body.kiosk-mode .aviation-panel {
   display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
+  grid-template-columns: 1fr 1.3fr !important;
   gap: 8px !important;
   background: transparent !important;
   border: none !important;
@@ -672,7 +704,7 @@ body.kiosk-mode .aviation-item h3 span {
 body.kiosk-mode .aviation-item pre {
   font-size: 0.7rem !important;
   line-height: 1.2 !important;
-  max-height: 140px !important;
+  max-height: 260px !important;
   overflow-y: auto !important;
 }
 
