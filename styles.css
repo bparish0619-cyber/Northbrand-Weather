@@ -426,44 +426,267 @@ body {
 }
 
 /* Kiosk / Digital Signage Mode */
+body.kiosk-mode {
+  overflow: hidden !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 body.kiosk-mode .top-nav,
-body.kiosk-mode footer { display: none !important; }
-body.kiosk-mode .dashboard-wrapper { max-width: 100vw; padding: 20px; }
-body.kiosk-mode .section-container h2 { font-size: 1.3rem; color: var(--accent); margin-bottom: 4px; }
+body.kiosk-mode footer {
+  display: none !important;
+}
+
+body.kiosk-mode .dashboard-wrapper {
+  max-width: 100vw !important;
+  height: 100vh !important;
+  padding: 12px 16px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  gap: 8px !important;
+}
+
+/* Make alerts and risks fit neatly at the top of the screen */
+body.kiosk-mode #alerts-container,
+body.kiosk-mode #risks-container {
+  margin-bottom: 0 !important;
+  flex-shrink: 0 !important;
+  width: 100% !important;
+}
+body.kiosk-mode .alert-banner {
+  padding: 10px 16px !important;
+  margin-bottom: 4px !important;
+}
+body.kiosk-mode .risk-briefing {
+  padding: 10px 16px !important;
+  border-radius: 8px !important;
+  margin-bottom: 4px !important;
+}
 
 body.kiosk-mode .advanced-grid {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  grid-auto-flow: row;
-  grid-auto-rows: min-content;
-  gap: 16px;
+  display: grid !important;
+  grid-template-columns: 1.25fr 1fr 1fr !important;
+  grid-template-rows: auto 1fr !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  gap: 16px !important;
+  overflow: hidden !important;
 }
 
+/* Column 1: Radar */
 body.kiosk-mode .radar-section {
-  grid-column: 1 / 2;
-  grid-row: 1 / span 10;
+  grid-column: 1 / 2 !important;
+  grid-row: 1 / span 2 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  margin-bottom: 0 !important;
+}
+body.kiosk-mode .radar-section .radar-header {
+  margin-bottom: 8px !important;
+  flex-shrink: 0 !important;
+}
+body.kiosk-mode .radar-section .map-container {
+  flex: 1 !important;
+  height: auto !important; /* Override standard and large media query heights */
 }
 
-body.kiosk-mode .map-container {
-  height: calc(100vh - 80px);
+/* Column 2: Forecasts (Microcast & 7-Day Outlook) */
+body.kiosk-mode .microcast-section {
+  grid-column: 2 / 3 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+body.kiosk-mode .forecast-section {
+  grid-column: 2 / 3 !important;
+  grid-row: 2 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
 }
 
-body.kiosk-mode section.collapsible-section {
-  grid-column: 2 / 3;
+/* Column 3: Aviation & Discussion */
+body.kiosk-mode .aviation-box {
+  grid-column: 3 / 4 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+body.kiosk-mode .discussion-section {
+  grid-column: 3 / 4 !important;
+  grid-row: 2 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
 }
 
-/* Compress right side components for Kiosk height */
+/* Headers and general Kiosk UI styling */
+body.kiosk-mode .section-container {
+  gap: 8px !important;
+}
+body.kiosk-mode .section-container h2 {
+  font-size: 0.95rem !important;
+  color: var(--accent) !important;
+  margin-bottom: 0 !important;
+}
+body.kiosk-mode .section-header-toggle {
+  padding-bottom: 4px !important;
+  margin-bottom: 4px !important;
+  cursor: default !important; /* Non-interactive dashboard */
+}
+body.kiosk-mode .section-header-toggle .chevron {
+  display: none !important; /* No need for collapse arrow in TV dashboard */
+}
+
+/* Middle Column: Microcast Card Compression */
+body.kiosk-mode .hourly-layout {
+  padding-bottom: 4px !important;
+  gap: 8px !important;
+}
+body.kiosk-mode .hourly-card {
+  min-width: 80px !important;
+  padding: 8px 6px !important;
+  border-radius: 8px !important;
+  gap: 2px !important;
+}
+body.kiosk-mode .hourly-card .hourly-time {
+  font-size: 0.8rem !important;
+  margin-bottom: 2px !important;
+}
+body.kiosk-mode .hourly-card .simple-icon-svg {
+  width: 24px !important;
+  height: 24px !important;
+  margin-bottom: 2px !important;
+}
+body.kiosk-mode .hourly-card .hourly-temp {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 2px !important;
+}
+body.kiosk-mode .hourly-card .forecast-metric {
+  display: none !important;
+}
+/* Re-enable just the hourly precip chance */
+body.kiosk-mode .hourly-card .forecast-metric:nth-of-type(4) {
+  display: flex !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  font-size: 0.75rem !important;
+  color: var(--accent) !important;
+}
+body.kiosk-mode .hourly-card .forecast-metric:nth-of-type(4) span.label {
+  display: none !important;
+}
+
+/* Middle Column: 7-Day Outlook Rows Compression */
 body.kiosk-mode .forecast-layout {
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  flex: 1 !important;
+  overflow-y: auto !important; /* Safe scroll in case of very short screens */
 }
-body.kiosk-mode .forecast-card { padding: 16px; }
-body.kiosk-mode .hourly-card { padding: 16px; min-width: 150px; }
-body.kiosk-mode .forecast-metric { padding: 4px 8px; margin-top: 4px; }
-body.kiosk-mode .simple-icon-svg { margin-bottom: 8px; width: 64px; height: 64px; }
-body.kiosk-mode .forecast-name, body.kiosk-mode .hourly-time { margin-bottom: 8px; }
-body.kiosk-mode .forecast-temp, body.kiosk-mode .hourly-temp { margin-bottom: 8px; font-size: 1.4rem; }
+body.kiosk-mode .forecast-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  gap: 12px !important;
+}
+body.kiosk-mode .forecast-card:hover {
+  transform: none !important; /* No hover transitions on TV display */
+}
+body.kiosk-mode .forecast-card .forecast-name {
+  flex: 1 !important;
+  text-align: left !important;
+  font-size: 0.85rem !important;
+  margin-bottom: 0 !important;
+}
+body.kiosk-mode .forecast-card .simple-icon-svg {
+  width: 24px !important;
+  height: 24px !important;
+  margin-bottom: 0 !important;
+}
+body.kiosk-mode .forecast-card .forecast-temp {
+  font-size: 0.9rem !important;
+  margin-bottom: 0 !important;
+  width: 85px !important;
+  display: flex !important;
+  gap: 6px !important;
+  justify-content: flex-end !important;
+}
+body.kiosk-mode .forecast-card .forecast-metric {
+  display: none !important;
+}
+/* Re-enable just the 7-day precip chance */
+body.kiosk-mode .forecast-card .forecast-metric:nth-of-type(3) {
+  display: flex !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  font-size: 0.8rem !important;
+  color: var(--accent) !important;
+}
+body.kiosk-mode .forecast-card .forecast-metric:nth-of-type(3) span.label {
+  display: none !important;
+}
 
-body.kiosk-mode .aviation-item, 
-body.kiosk-mode .discussion-panel { padding: 16px; }
-body.kiosk-mode .discussion-panel { max-height: 250px; }
+/* Right Column: Aviation METAR & TAF side-by-side */
+body.kiosk-mode .aviation-panel {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+  background: transparent !important;
+  border: none !important;
+}
+body.kiosk-mode .aviation-item {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+}
+body.kiosk-mode .aviation-item h3 {
+  font-size: 0.75rem !important;
+  margin-bottom: 4px !important;
+  letter-spacing: 0.5px !important;
+}
+body.kiosk-mode .aviation-item h3 span {
+  font-size: 0.7rem !important;
+  margin-left: 4px !important;
+}
+body.kiosk-mode .aviation-item pre {
+  font-size: 0.7rem !important;
+  line-height: 1.2 !important;
+  max-height: 140px !important;
+  overflow-y: auto !important;
+}
+
+/* Right Column: Scrollable Meteorological Discussion */
+body.kiosk-mode .discussion-panel {
+  flex: 1 !important;
+  padding: 8px !important;
+  overflow-y: auto !important;
+  max-height: none !important; /* Allow grid to stretch it */
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+}
+body.kiosk-mode .discussion-panel pre {
+  font-size: 0.75rem !important;
+  line-height: 1.35 !important;
+}
