@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Global State
-  let map, radarLayer, locationMarker;
+  let map, radarLayer, locationMarker, warningsLayer;
   let isDarkMode = false;
   let baseLayer;
   let currentLat = null;
@@ -55,6 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
         format: 'image/png',
         transparent: true,
         opacity: 0.7
+    }).addTo(map);
+
+    // Active storm warnings/tracks overlay
+    warningsLayer = L.tileLayer.wms("https://mesonet.agron.iastate.edu/cgi-bin/wms/us/wwa.cgi", {
+        layers: 'warnings_c',
+        format: 'image/png',
+        transparent: true,
+        opacity: 0.85
     }).addTo(map);
 
     const opacitySlider = document.getElementById('radar-opacity-slider');
@@ -264,6 +272,12 @@ document.addEventListener('DOMContentLoaded', () => {
       radarLayer = L.tileLayer.wms("https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0q.cgi?" + new Date().getTime(), {
           layers: 'nexrad-n0q-900913',
           format: 'image/png', transparent: true, opacity: 0.7
+      }).addTo(map);
+
+      if (warningsLayer) map.removeLayer(warningsLayer);
+      warningsLayer = L.tileLayer.wms("https://mesonet.agron.iastate.edu/cgi-bin/wms/us/wwa.cgi?" + new Date().getTime(), {
+          layers: 'warnings_c',
+          format: 'image/png', transparent: true, opacity: 0.85
       }).addTo(map);
 
       // Invoke Solar Parallel Execution
