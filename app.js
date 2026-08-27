@@ -271,6 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Core API Processor Algorithm ---
   async function fetchDashboardDataByCoords(lat, lon, isRefresh = false) {
+    // Nominatim hands back lat/lon as strings, so coerce at the single entry
+    // point every caller funnels through. Downstream consumers (updateURLParams'
+    // toFixed, the auto-refresh re-dispatch) assume real numbers.
+    lat = parseFloat(lat);
+    lon = parseFloat(lon);
     currentLat = lat;
     currentLon = lon;
     if (geoButton) geoButton.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 8l-8 3.5 2.5 1.5 1.5 2.5z"></path></svg>`;
