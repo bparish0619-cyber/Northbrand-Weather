@@ -35,6 +35,29 @@ document.addEventListener('DOMContentLoaded', () => {
   let refreshTimerId = null;
   let clockTimerId = null;
 
+  // --- Basemap Provider ---
+  // CARTO's basemap CDN now requires an API key. Anonymous requests still return
+  // tiles, but they are stamped with an "API KEY REQUIRED" watermark, which is what
+  // shows up over the radar in production. Leave CARTO_API_KEY empty to use the
+  // keyless Esri Canvas basemaps, or paste a CARTO key here to go back to CARTO.
+  const CARTO_API_KEY = '';
+
+  const BASEMAP = CARTO_API_KEY
+    ? {
+        light: `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_API_KEY}`,
+        dark: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?api_key=${CARTO_API_KEY}`,
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxNativeZoom: 20
+      }
+    : {
+        light: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+        dark: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+        attribution: '&copy; OpenStreetMap contributors, &copy; Esri, HERE, Garmin',
+        subdomains: 'abc',
+        maxNativeZoom: 16
+      };
+
   function initMap() {
     const initialUrlParams = new URLSearchParams(window.location.search);
     const initialZoom = parseInt(initialUrlParams.get('zoom')) || 4;
@@ -44,9 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
        if (currentLat !== null) updateURLParams();
     });
 
-    baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      subdomains: 'abcd',
+    baseLayer = L.tileLayer(BASEMAP.light, {
+      attribution: BASEMAP.attribution,
+      subdomains: BASEMAP.subdomains,
+      maxNativeZoom: BASEMAP.maxNativeZoom,
       maxZoom: 20
     }).addTo(map);
 
@@ -77,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       themeBtn.addEventListener('click', () => {
         isDarkMode = !isDarkMode;
         themeBtn.innerText = isDarkMode ? "Switch to Light Map" : "Switch to Dark Map";
-        baseLayer.setUrl(isDarkMode ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png');
+        baseLayer.setUrl(isDarkMode ? BASEMAP.dark : BASEMAP.light);
       });
     }
   }

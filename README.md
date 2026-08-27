@@ -20,6 +20,7 @@
 - **United States National Weather Service (`api.weather.gov`):** Raw point data, Quantitative precipitation grids, active textual alerts, and Terminal descriptions natively decoded natively via JS matrix hooks.
 - **OpenStreetMap / Nominatim:** Real-time Geocoding search parameters.
 - **Sunrise-Sunset.org**: Lightweight dynamic coordinate constraints for Solar timing offsets. 
+- **Esri Canvas Basemaps (`server.arcgisonline.com`):** Keyless light/dark grey basemap tiles rendered beneath the NEXRAD overlay.
 
 ## Getting Started
 
@@ -32,3 +33,19 @@ Because of its architecture natively traversing API streams built for modern web
 ## Security & API Key Policies
 
 Northbrand Weather intentionally utilizes completely open, proxy-free, authentication-exempt infrastructural pipelines. There are natively **0 API keys, passwords, or secret authorization tokens** within this codebase required to execute or scale the platform natively against tracking limits.
+
+### Basemap tiles
+
+The basemap previously used CARTO's public tile CDN. CARTO now requires an API key for
+its basemaps, and unauthenticated requests still return tiles — but stamped with an
+`API KEY REQUIRED` watermark, which showed through on the deployed site. The basemap
+now uses Esri's Light/Dark Grey Canvas tiles, which need no key.
+
+To go back to CARTO, get a key from <https://carto.com/basemaps/> and set it at the top
+of `app.js`:
+
+```js
+const CARTO_API_KEY = 'your-key-here';
+```
+
+Leaving it empty keeps the keyless Esri basemaps.
