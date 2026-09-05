@@ -502,10 +502,11 @@ body.kiosk-mode .dashboard-wrapper {
   gap: 8px !important;
 }
 
-/* Share one compact grid across official alerts and forecast risks. */
+/* Keep all notification types content-sized in a wrapping horizontal row. */
 body.kiosk-mode .notification-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 8px;
   flex-shrink: 0;
   min-width: 0;
@@ -519,7 +520,10 @@ body.kiosk-mode #risks-container {
 }
 body.kiosk-mode .alert-banner,
 body.kiosk-mode .risk-briefing {
-  min-width: 0;
+  flex: 0 1 auto;
+  width: max-content;
+  min-width: min(100%, 18rem);
+  max-width: min(100%, 36rem);
   padding: 8px 12px !important;
   border-radius: 8px !important;
   margin-bottom: 0 !important;
