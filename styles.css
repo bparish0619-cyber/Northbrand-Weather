@@ -69,10 +69,28 @@ body {
 /* Header & Search */
 .top-nav {
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
   margin-bottom: 32px;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.site-logo {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 10px;
 }
 
 .top-nav h1 {
@@ -446,6 +464,11 @@ body.kiosk-mode .top-nav {
 }
 body.kiosk-mode .top-nav h1 {
   font-size: 1.25rem !important;
+}
+body.kiosk-mode .site-logo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
 }
 body.kiosk-mode .nav-controls {
   gap: 8px !important;
