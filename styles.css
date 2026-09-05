@@ -502,21 +502,52 @@ body.kiosk-mode .dashboard-wrapper {
   gap: 8px !important;
 }
 
-/* Make alerts and risks fit neatly at the top of the screen */
+/* Share one compact grid across official alerts and forecast risks. */
+body.kiosk-mode .notification-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+body.kiosk-mode .notification-strip:not(:has(.alert-banner, .risk-briefing)) {
+  display: none;
+}
 body.kiosk-mode #alerts-container,
 body.kiosk-mode #risks-container {
-  margin-bottom: 0 !important;
-  flex-shrink: 0 !important;
-  width: 100% !important;
+  display: contents;
 }
-body.kiosk-mode .alert-banner {
-  padding: 10px 16px !important;
-  margin-bottom: 4px !important;
-}
+body.kiosk-mode .alert-banner,
 body.kiosk-mode .risk-briefing {
-  padding: 10px 16px !important;
+  min-width: 0;
+  padding: 8px 12px !important;
   border-radius: 8px !important;
-  margin-bottom: 4px !important;
+  margin-bottom: 0 !important;
+  overflow-wrap: anywhere;
+}
+body.kiosk-mode .alert-header {
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-bottom: 4px;
+}
+body.kiosk-mode .alert-title,
+body.kiosk-mode .risk-title {
+  font-size: 0.85rem;
+  line-height: 1.3;
+  letter-spacing: 0.4px;
+}
+body.kiosk-mode .risk-title {
+  margin-bottom: 4px;
+}
+body.kiosk-mode .alert-time {
+  padding: 2px 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+body.kiosk-mode .alert-desc,
+body.kiosk-mode .risk-value {
+  font-size: 0.875rem;
+  line-height: 1.35;
 }
 
 body.kiosk-mode .advanced-grid {
